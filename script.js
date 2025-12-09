@@ -1,3 +1,6 @@
+//Please clear my console hehe
+console.clear();
+
 var Stage = /** @class */ (function () {
   function Stage() {
     var _this = this;
@@ -343,4 +346,72 @@ var Game = /** @class */ (function () {
       _this.startGame();
     }, cameraMoveSpeed * 1000);
   };
+  Game.prototype.placeBlock = function () {
+    var _this = this;
+    var currentBlock = this.blocks[this.blocks.length - 1];
+    var newBlocks = currentBlock.place();
+    this.newBlocks.remove(currentBlock.mesh);
+    if (newBlocks.placed) this.placedBlocks.add(newBlocks.placed);
+    if (newBlocks.chopped) {
+      this.choppedBlocks.add(newBlocks.chopped);
+      var positionParams = {
+        y: "-=30",
+        ease: Power1.easeIn,
+        onComplete: function () {
+          return _this.choppedBlocks.remove(newBlocks.chopped);
+        },
+      };
+      var rotateRandomness = 10;
+      var rotationParams = {
+        delay: 0.05,
+        x:
+          newBlocks.plane == "z"
+            ? Math.random() * rotateRandomness - rotateRandomness / 2
+            : 0.1,
+        z:
+          newBlocks.plane == "x"
+            ? Math.random() * rotateRandomness - rotateRandomness / 2
+            : 0.1,
+        y: Math.random() * 0.1,
+      };
+      if (
+        newBlocks.chopped.position[newBlocks.plane] >
+        newBlocks.placed.position[newBlocks.plane]
+      ) {
+        positionParams[newBlocks.plane] =
+          "+=" + 40 * Math.abs(newBlocks.direction);
+      } else {
+        positionParams[newBlocks.plane] =
+          "-=" + 40 * Math.abs(newBlocks.direction);
+      }
+      TweenLite.to(newBlocks.chopped.position, 1, positionParams);
+      TweenLite.to(newBlocks.chopped.rotation, 1, rotationParams);
+    }
+    this.addBlock();
+  };
+  Game.prototype.addBlock = function () {
+    var lastBlock = this.blocks[this.blocks.length - 1];
+    if (lastBlock && lastBlock.state == lastBlock.STATES.MISSED) {
+      return this.endGame();
+    }
+    this.scoreContainer.innerHTML = String(this.blocks.length - 1);
+    var newKidOnTheBlock = new Block(lastBlock);
+    this.newBlocks.add(newKidOnTheBlock.mesh);
+    this.blocks.push(newKidOnTheBlock);
+    this.stage.setCamera(this.blocks.length * 2);
+    if (this.blocks.length >= 5) this.instructions.classList.add("hide");
+  };
+  Game.prototype.endGame = function () {
+    this.updateState(this.STATES.ENDED);
+  };
+  Game.prototype.tick = function () {
+    var _this = this;
+    this.blocks[this.blocks.length - 1].tick();
+    this.stage.render();
+    requestAnimationFrame(function () {
+      _this.tick();
+    });
+  };
+  return Game;
 })();
+var game = new Game();
