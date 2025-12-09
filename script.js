@@ -1,4 +1,4 @@
-//Please clear my console hehe
+//Please clear my console hehe!
 console.clear();
 
 var Stage = /** @class */ (function () {
