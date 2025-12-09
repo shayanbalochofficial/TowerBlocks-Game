@@ -85,4 +85,33 @@ body {
   text-align: center;
   transition: opacity 0.5s ease, transform 0.5s ease;
   opacity: 0;
+  -webkit-transition: opacity 0.5s ease, transform 0.5s ease;
+  -moz-transition: opacity 0.5s ease, transform 0.5s ease;
+  -ms-transition: opacity 0.5s ease, transform 0.5s ease;
+  -o-transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#container #instructions.hide {
+  opacity: 0 !important;
+}
+#container.playing #score,
+#container.resetting #score {
+  transform: translatey(0px) scale(1);
+}
+#container.playing #instructions {
+  opacity: 1;
+}
+#container.ready .game-ready #start-button {
+  opacity: 1;
+  transform: translatey(0);
+}
+#container.ended #score {
+  transform: translatey(6vh) scale(1.5);
+}
+#container.ended .game-over * {
+  opacity: 1;
+  transform: translatey(0);
+}
+#container.ended .game-over p {
+  transition-delay: 0.3s;
 }
